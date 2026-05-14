@@ -13,7 +13,7 @@
   "language": "en",
   "notesLanguage": "change to your language with ISO 639-1 code, available languages: vi (Vietnamese), en (English)",
   "nickNameBot": "গেসুকে 😈",
-  "prefix": "~",
+  "prefix":".",
   "noPrefix": true,
   "noPrefixNotes": "When true, Bot Admins (role 2) and Developers (role 4) can run commands without the prefix",
   "adminOnly": {
@@ -21,20 +21,20 @@
     "ignoreCommand": []
   },
   "adminBot": [
-    "61588057525081"
+    "61589880922755"
   ],
   "premiumUsers": [
-    "61588057525081"
+    "61589880922755"
   ],
   "devUsers": [
-    "61588057525081"
+    "61589880922755"
   ],
   "notes_premiumUsers": "List of user IDs with premium access (role 3)",
   "notes_devUsers": "List of developer IDs with full access (role 4)",
   "whiteListMode": {
     "enable": false,
     "whiteListIds": [
-      "61588057525081"
+      "61589880922755"
     ],
     "notes": "if you enable this feature, only the ids in the whiteListIds list can use the bot"
   },
