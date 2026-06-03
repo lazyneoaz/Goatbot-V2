@@ -1,0 +1,3 @@
+- [Welcome event script](welcome-event-script.md) — welcome.js was completely missing from scripts/events/; language file and setwelcome.js were both present but the sender script did not exist.
+- [Event script conventions](event-script-conventions.md) — key patterns, getPrefix usage, and stale-reference behavior in onEvent.js.
+- [Stability fixes applied](stability-fixes.md) — summary of the 13 bugs fixed across index.js, Goat.js, handlers, func/, dashboard/, and login.js.
