@@ -1,11 +1,13 @@
 module.exports = {
 	config: {
 		name: "exit",
-		version: "1.1",
+		version: "1.0",
 		author: "Ismail",
-		countDown: 5,
+		countDown: 3,
 		role: 1,
-		description: "Send an image then leave the group",
+		description: {
+			en: "Make the bot leave the group"
+		},
 		category: "box chat",
 		guide: {
 			en: "{pn}"
@@ -13,32 +15,35 @@ module.exports = {
 	},
 
 	onStart: async function ({ api, event, message }) {
-		const IMAGE_URL = "https://postimg.cc/nCktWnfF";
-
 		try {
-			// إرسال الصورة فقط بدون أي نص
-			const image = await global.utils.getStreamFromURL(IMAGE_URL);
+			// رسالة عادية فقط، بدون attachment
+			await message.reply(
+				"▬▬▬▬▬▬▬▬▬▬▬▬\n" +
+				"👋 𝗚𝗢𝗢𝗗𝗕𝗬𝗘\n" +
+				"▬▬▬▬▬▬▬▬▬▬▬▬\n\n" +
+				"🚀 Goodbye everyone.\n" +
+				"😙 Ismail Bot is leaving the group💋.\n\n" +
+				"▬▬▬▬▬▬▬▬▬▬▬▬"
+			);
 
-			await message.reply({
-				attachment: image
-			});
-
-			// انتظار ثانية
+			// خروج البوت من المجموعة
 			await new Promise(resolve =>
 				setTimeout(resolve, 1000)
 			);
 
-			// خروج البوت من المجموعة
 			return api.removeUserFromGroup(
-				api.getCurrentUserID(),
-				event.threadID
+				event.threadID,
+				api.getCurrentUserID()
 			);
 
 		} catch (error) {
-			console.error("[EXIT ERROR]:", error);
+			console.error(
+				"[EXIT ERROR]",
+				error
+			);
 
 			return message.reply(
-				"❌ تعذر تنفيذ أمر الخروج."
+				"❌ حدث خطأ أثناء محاولة خروج البوت."
 			);
 		}
 	}
