@@ -89,7 +89,7 @@ module.exports = {
 		const formatCommands = (cmds) =>
 			cmds.sort().map((cmd) => `× ${cmd}`);
 
-		let msg = `━━━☠️ 𝗡𝗲𝗼𝗞𝗘𝗫 𝗔𝗜 ☠️━━━\n`;
+		let msg = `━━━𝘽𝘼𝙎𝙎𝙀𝙏━━━\n`;
 		const sortedCategories = Object.keys(categories).sort();
 		for (const cat of sortedCategories) {
 			const emoji = emojiMap[cat] || "➥";

@@ -1,0 +1,100 @@
+const path = require('path');
+const fs = require('fs-extra');
+
+module.exports = {
+  config: {
+    name: "say",
+    version: "1.8",
+    author: "Samir Œ",
+    countDown: 5,
+    role: 0,
+    category: "tts",
+    description: "bot will make your text into voice.",
+    guide: {
+      en: "{pn} your text (default will be 'en') | {pn} your text | [use two words ISO 639-1 code, ex: English-en, Bangla-bn, Hindi-hi or more, search Google for your language code]"
+    }
+  },
+
+  onStart: async function ({ api, args, message, event }) {
+    const { getPrefix } = global.utils;
+    const p = getPrefix(event.threadID);
+
+    let text;
+    let number = 'en';
+
+    if (event.type === "message_reply") {
+      text = event.messageReply.body;
+    } else if (Array.isArray(args) && args.length > 0) {
+      if (args.includes("|")) {
+        const splitArgs = args.join(" ").split("|").map(arg => arg.trim());
+        text = splitArgs[0];
+        number = splitArgs[1] || 'en';
+      } else {
+        text = args.join(" ");
+      }
+    } else {
+      text = '';
+    }
+
+    if (!text || !text.trim()) {
+      return message.reply(`Please provide some text. Example:\n${p}say hi there`);
+    }
+
+    const outputPath = path.join(__dirname, 'tmp', 'tts.mp3');
+    await fs.ensureDir(path.dirname(outputPath));
+
+    try {
+      const cleanText = text.trim();
+      const safeNumber = (number || 'en').trim() || 'en';
+
+      if (cleanText.length <= 150) {
+        const response = await axios({
+          method: "get",
+          url: `https://translate.googleapis.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${encodeURIComponent(safeNumber)}&q=${encodeURIComponent(cleanText)}`,
+          responseType: "arraybuffer",
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36',
+            'Accept': '*/*'
+          },
+          timeout: 30000
+        });
+
+        await fs.writeFile(outputPath, Buffer.from(response.data));
+        await message.reply({
+          body: cleanText,
+          attachment: fs.createReadStream(outputPath)
+        });
+        setTimeout(() => fs.remove(outputPath).catch(() => {}), 10000);
+        return;
+      }
+
+      const chunkSize = 150;
+      const chunks = cleanText.match(new RegExp(`.{1,${chunkSize}}`, 'g')) || [cleanText];
+      const buffers = [];
+
+      for (let i = 0; i < chunks.length; i++) {
+        const response = await axios({
+          method: "get",
+          url: `https://translate.googleapis.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${encodeURIComponent(safeNumber)}&q=${encodeURIComponent(chunks[i])}`,
+          responseType: "arraybuffer",
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36',
+            'Accept': '*/*'
+          },
+          timeout: 30000
+        });
+        buffers.push(Buffer.from(response.data));
+      }
+
+      await fs.writeFile(outputPath, Buffer.concat(buffers));
+      await message.reply({
+        body: cleanText,
+        attachment: fs.createReadStream(outputPath)
+      });
+      setTimeout(() => fs.remove(outputPath).catch(() => {}), 10000);
+    } catch (err) {
+      console.error('[SAY ERROR]', err);
+      message.reply('An error occurred while trying to convert your text to speech or send it as an attachment. Please try again later.');
+    }
+  }
+};
